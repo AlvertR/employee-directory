@@ -67,3 +67,4 @@ json-server exposes REST endpoints at `http://localhost:3001`:
 
 - Use comments sparingly. Only comment complex, non-obvious code.
 - When creating RTK Query endpoints, always add proper TypeScript types for the response.
+- Always use context7 to check up-to-date docs when implementing or modifying code that uses RTK Query, React Hook Form, Zod, TanStack Table, or any third-party library.
