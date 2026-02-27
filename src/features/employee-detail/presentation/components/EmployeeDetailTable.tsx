@@ -4,17 +4,19 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { Employee } from "../../domain/employee.types.ts";
+import type { EmployeeDetail } from "../../domain/employee-detail.types.ts";
 
-const columnHelper = createColumnHelper<Employee>();
+const columnHelper = createColumnHelper<EmployeeDetail>();
 
 const columns = [
   columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
     id: "name",
     header: "Name",
   }),
+  columnHelper.accessor("email", { header: "Email" }),
   columnHelper.accessor("position", { header: "Position" }),
   columnHelper.accessor("department", { header: "Department" }),
+  columnHelper.accessor("startDate", { header: "Start Date" }),
   columnHelper.accessor("status", {
     header: "Status",
     cell: (info) => {
@@ -34,12 +36,15 @@ const columns = [
   }),
 ];
 
-interface EmployeesTableProps {
-  employees: Employee[];
-  onSelect?: (employee: Employee) => void;
+interface EmployeeDetailTableProps {
+  employees: EmployeeDetail[];
+  onSelect?: (employee: EmployeeDetail) => void;
 }
 
-export default function EmployeesTable({ employees, onSelect }: EmployeesTableProps) {
+export default function EmployeeDetailTable({
+  employees,
+  onSelect,
+}: EmployeeDetailTableProps) {
   const table = useReactTable({
     data: employees,
     columns,
@@ -74,7 +79,10 @@ export default function EmployeesTable({ employees, onSelect }: EmployeesTablePr
               onClick={() => onSelect?.(row.original)}
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                <td
+                  key={cell.id}
+                  className="whitespace-nowrap px-6 py-4 text-sm text-gray-900"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
