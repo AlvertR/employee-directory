@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useGetEmployeesQuery } from "../../data/employeesApi.ts";
+import { useMemo, useState } from "react";
+import { useGetEmployeesQuery, useGetDepartmentsQuery } from "../../data/employeesApi.ts";
 import EmployeesTable from "../components/EmployeesTable.tsx";
 import EmployeeCreateForm from "../components/EmployeeCreateForm.tsx";
 import EmployeeDetailDetailPage from "../../../employee-detail/presentation/pages/EmployeeDetailDetailPage.tsx";
@@ -11,7 +11,15 @@ type View =
 
 export default function EmployeesPage() {
   const { data: employees, isLoading, error } = useGetEmployeesQuery();
+  const { data: departments } = useGetDepartmentsQuery();
   const [view, setView] = useState<View>({ kind: "list" });
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
+
+  const filteredEmployees = useMemo(() => {
+    if (!employees) return [];
+    if (selectedDepartment === "all") return employees;
+    return employees.filter((e) => e.department === selectedDepartment);
+  }, [employees, selectedDepartment]);
 
   if (isLoading)
     return <p className="p-8 text-gray-500">Loading employees…</p>;
@@ -61,8 +69,26 @@ export default function EmployeesPage() {
           + Add Employee
         </button>
       </div>
+      <div className="mb-4">
+        <label htmlFor="department-filter" className="mr-2 text-sm font-medium text-gray-700">
+          Department
+        </label>
+        <select
+          id="department-filter"
+          value={selectedDepartment}
+          onChange={(e) => setSelectedDepartment(e.target.value)}
+          className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+        >
+          <option value="all">All</option>
+          {departments?.map((dept) => (
+            <option key={dept.id} value={dept.name}>
+              {dept.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <EmployeesTable
-        employees={employees ?? []}
+        employees={filteredEmployees}
         onSelect={(employee) =>
           setView({ kind: "detail", employeeId: employee.id })
         }
