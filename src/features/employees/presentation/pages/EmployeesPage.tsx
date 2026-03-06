@@ -48,15 +48,15 @@ export default function EmployeesPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">
+    <div className="mx-auto max-w-7xl p-8">
+      <div className="mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">
           Employee Directory
         </h1>
         <button
           type="button"
           onClick={() => setView({ kind: "create" })}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+          className="shrink-0 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
           + Add Employee
         </button>
