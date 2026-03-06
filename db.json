@@ -27,7 +27,7 @@
       "email": "sofia.ramirez@apsys.mx",
       "position": "UX Designer",
       "department": "Design",
-      "startDate": "2023-01-10",
+      "startDate": "2023-01-09",
       "status": "active"
     },
     {
@@ -102,11 +102,29 @@
     }
   ],
   "departments": [
-    { "id": 1, "name": "Engineering" },
-    { "id": 2, "name": "Design" },
-    { "id": 3, "name": "Operations" },
-    { "id": 4, "name": "Infrastructure" },
-    { "id": 5, "name": "Human Resources" },
-    { "id": 6, "name": "Analytics" }
+    {
+      "id": 1,
+      "name": "Engineering"
+    },
+    {
+      "id": 2,
+      "name": "Design"
+    },
+    {
+      "id": 3,
+      "name": "Operations"
+    },
+    {
+      "id": 4,
+      "name": "Infrastructure"
+    },
+    {
+      "id": 5,
+      "name": "Human Resources"
+    },
+    {
+      "id": 6,
+      "name": "Analytics"
+    }
   ]
 }
