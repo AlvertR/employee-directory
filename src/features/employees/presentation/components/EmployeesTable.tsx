@@ -2,9 +2,13 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import type { Employee } from "../../domain/employee.types.ts";
+
+const normalize = (s: string) =>
+  s.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 
 const columnHelper = createColumnHelper<Employee>();
 
@@ -42,13 +46,25 @@ const columns = [
 interface EmployeesTableProps {
   employees: Employee[];
   onSelect?: (employee: Employee) => void;
+  globalFilter?: string;
+  onGlobalFilterChange?: (value: string) => void;
 }
 
-export default function EmployeesTable({ employees, onSelect }: EmployeesTableProps) {
+export default function EmployeesTable({ employees, onSelect, globalFilter, onGlobalFilterChange }: EmployeesTableProps) {
   const table = useReactTable({
     data: employees,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { globalFilter },
+    onGlobalFilterChange,
+    globalFilterFn: (row, _columnId, filterValue: string) => {
+      const search = normalize(filterValue);
+      return (
+        normalize(row.original.firstName).includes(search) ||
+        normalize(row.original.lastName).includes(search)
+      );
+    },
   });
 
   const handleRowKeyDown = (e: React.KeyboardEvent, employee: Employee) => {
@@ -58,16 +74,15 @@ export default function EmployeesTable({ employees, onSelect }: EmployeesTablePr
     }
   };
 
-  if (employees.length === 0) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-white">
-        <p className="py-12 text-center text-sm text-gray-500">No employees found.</p>
-      </div>
-    );
-  }
+  const rowCount = table.getRowModel().rows.length;
 
   return (
     <div className="relative overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <p aria-live="polite" className="sr-only">
+        {globalFilter
+          ? `${rowCount} employee${rowCount !== 1 ? "s" : ""} found for "${globalFilter}"`
+          : `Showing all ${rowCount} employees`}
+      </p>
       <table className="min-w-full divide-y divide-gray-200" aria-label="Employee directory">
         <thead className="border-b border-gray-300 bg-gray-50">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -87,18 +102,25 @@ export default function EmployeesTable({ employees, onSelect }: EmployeesTablePr
           ))}
         </thead>
         <tbody className="divide-y divide-gray-200">
+          {rowCount === 0 && (
+            <tr>
+              <td colSpan={columns.length} className="py-12 text-center text-sm text-gray-500">
+                No employees found.
+              </td>
+            </tr>
+          )}
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
               tabIndex={onSelect ? 0 : undefined}
-              role={onSelect ? "link" : undefined}
+              role={onSelect ? "button" : undefined}
               aria-label={onSelect ? `View ${row.original.firstName} ${row.original.lastName}` : undefined}
               className={`hover:bg-gray-100 ${onSelect ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500" : ""}`}
               onClick={() => onSelect?.(row.original)}
               onKeyDown={onSelect ? (e) => handleRowKeyDown(e, row.original) : undefined}
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="whitespace-nowrap px-6 py-4 text-sm text-slate-900 sm:whitespace-nowrap">
+                <td key={cell.id} className="whitespace-nowrap px-6 py-4 text-sm text-slate-900">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
